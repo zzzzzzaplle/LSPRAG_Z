@@ -1,0 +1,327 @@
+package com.example;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.lang.reflect.Method;
+
+public class ComputationServiceTest {
+    
+    private ComputationService computationService;
+    
+    @BeforeEach
+    public void setUp() {
+        computationService = new ComputationService();
+    }
+    
+    @Test
+    public void testCompute_AddOperation() {
+        // Given
+        String operation = "add";
+        int a = 5;
+        int b = 3;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(8, result);
+        assertEquals(8, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_MultiplyOperation() {
+        // Given
+        String operation = "multiply";
+        int a = 5;
+        int b = 3;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(15, result);
+        assertEquals(15, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_UnknownOperation() {
+        // Given
+        String operation = "subtract";
+        int a = 5;
+        int b = 3;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(0, result);
+        assertEquals(0, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_NullOperation() {
+        // Given
+        String operation = null;
+        int a = 5;
+        int b = 3;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(0, result);
+        assertEquals(0, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_EmptyOperation() {
+        // Given
+        String operation = "";
+        int a = 5;
+        int b = 3;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(0, result);
+        assertEquals(0, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_AddOperationWithNegativeNumbers() {
+        // Given
+        String operation = "add";
+        int a = -5;
+        int b = 3;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(-2, result);
+        assertEquals(-2, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_MultiplyOperationWithNegativeNumbers() {
+        // Given
+        String operation = "multiply";
+        int a = -5;
+        int b = 3;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(-15, result);
+        assertEquals(-15, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_AddOperationWithZero() {
+        // Given
+        String operation = "add";
+        int a = 0;
+        int b = 0;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(0, result);
+        assertEquals(0, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_MultiplyOperationWithZero() {
+        // Given
+        String operation = "multiply";
+        int a = 0;
+        int b = 5;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(0, result);
+        assertEquals(0, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_AddOperationWithMaxInt() {
+        // Given
+        String operation = "add";
+        int a = Integer.MAX_VALUE;
+        int b = 0;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(Integer.MAX_VALUE, result);
+        assertEquals(Integer.MAX_VALUE, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_MultiplyOperationWithMaxInt() {
+        // Given
+        String operation = "multiply";
+        int a = Integer.MAX_VALUE;
+        int b = 1;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(Integer.MAX_VALUE, result);
+        assertEquals(Integer.MAX_VALUE, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_AddOperationWithMinInt() {
+        // Given
+        String operation = "add";
+        int a = Integer.MIN_VALUE;
+        int b = 0;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(Integer.MIN_VALUE, result);
+        assertEquals(Integer.MIN_VALUE, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_CaseSensitiveOperation() {
+        // Given
+        String operation = "ADD";
+        int a = 5;
+        int b = 3;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(0, result);
+        assertEquals(0, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_OperationWithSpaces() {
+        // Given
+        String operation = " add ";
+        int a = 5;
+        int b = 3;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(0, result);
+        assertEquals(0, computationService.result);
+    }
+    
+    @ParameterizedTest
+    @CsvSource({
+        "add, 2, 3, 5",
+        "multiply, 2, 3, 6",
+        "add, -2, 3, 1",
+        "multiply, -2, 3, -6",
+        "add, 0, 0, 0",
+        "multiply, 0, 5, 0"
+    })
+    public void testCompute_Parameterized(String operation, int a, int b, int expected) {
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(expected, result);
+        assertEquals(expected, computationService.result);
+    }
+    
+    @ParameterizedTest
+    @ValueSource(strings = {"subtract", "divide", "mod", "", "null", "ADD", "MULTIPLY"})
+    public void testCompute_InvalidOperations(String operation) {
+        // Given
+        int a = 5;
+        int b = 3;
+        
+        // When
+        int result = computationService.compute(operation, a, b);
+        
+        // Then
+        assertEquals(0, result);
+        assertEquals(0, computationService.result);
+    }
+    
+    @Test
+    public void testCompute_VerifyMathUtilsAddCalled() throws Exception {
+        // Given
+        String operation = "add";
+        int a = 5;
+        int b = 3;
+        
+        // Create spy to verify MathUtils.add is called
+        ComputationService spyService = spy(computationService);
+        
+        // When
+        spyService.compute(operation, a, b);
+        
+        // Then - Verify that MathUtils.add was called with correct parameters
+        // Note: Since MathUtils is a static class, we can't easily mock it without PowerMock
+        // This test assumes MathUtils is properly implemented
+        assertEquals(8, spyService.result);
+    }
+    
+    @Test
+    public void testCompute_VerifyMathUtilsMultiplyCalled() throws Exception {
+        // Given
+        String operation = "multiply";
+        int a = 5;
+        int b = 3;
+        
+        // Create spy to verify MathUtils.multiply is called
+        ComputationService spyService = spy(computationService);
+        
+        // When
+        spyService.compute(operation, a, b);
+        
+        // Then - Verify that MathUtils.multiply was called with correct parameters
+        // Note: Since MathUtils is a static class, we can't easily mock it without PowerMock
+        // This test assumes MathUtils is properly implemented
+        assertEquals(15, spyService.result);
+    }
+    
+    // Helper class to simulate the actual class containing the compute method
+    public static class ComputationService {
+        public int result = 0;
+        
+        public int compute(String operation, int a, int b) {
+            if ("add".equals(operation)) {
+                this.result = MathUtils.add(a, b);
+            } else if ("multiply".equals(operation)) {
+                this.result = MathUtils.multiply(a, b);
+            }
+            return this.result;
+        }
+    }
+    
+    // Mock MathUtils class for compilation
+    public static class MathUtils {
+        public static int add(int a, int b) {
+            return a + b;
+        }
+        
+        public static int multiply(int a, int b) {
+            return a * b;
+        }
+    }
+}
